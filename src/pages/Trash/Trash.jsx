@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import useAllTrash from '../../hooks/useAllTrash';
 import { SlOptionsVertical } from 'react-icons/sl';
 import Swal from 'sweetalert2';
 import useAxios from '../../hooks/useAxios';
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { UserProvider } from '../../context/AuthContext';
 
 const Trash = () => {
     const { isPending, error, trash: notes, refetch } = useAllTrash()
     const axiosData = useAxios();
+    const { search } = useContext(UserProvider)
 
     const [isHovered, setIsHovered] = useState(null);
 
@@ -48,7 +50,9 @@ const Trash = () => {
             <div>
                 {
                     notes?.length > 0 ? <div className='flex flex-wrap justify-center gap-3'>
-                        {notes?.map((item, i) => (
+                        {notes?.filter((user) => {
+                            return search.toLowerCase() === '' ? user : (user?.title.toLowerCase().includes(search) || user?.text.toLowerCase().includes(search))
+                        }).map((item, i) => (
                             <div
                                 key={i}
                                 onMouseOver={() => handleMouseOver(i)}
